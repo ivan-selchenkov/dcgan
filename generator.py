@@ -1,5 +1,7 @@
 from torch import nn
+import torch
 
+criterion = nn.BCEWithLogitsLoss()
 
 def deconv(in_channels, out_channels, kernel_size, stride=2, padding=1, batch_norm=True):
     """Creates a transposed-convolutional layer, with optional batch normalization.
@@ -43,3 +45,12 @@ class Generator(nn.Module):
         x = self.tanh(self.conv3(x))
 
         return x
+
+def fake_loss(G_out: torch.Tensor, cuda):
+    batch_size = G_out.size(0)
+    labels = torch.ones(batch_size)
+
+    if cuda:
+        labels = labels.cuda()
+
+    return criterion(G_out.squeeze(), labels)

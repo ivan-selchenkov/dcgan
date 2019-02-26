@@ -1,6 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 
+criterion = nn.BCEWithLogitsLoss()
 
 def conv(in_channels, out_channels, kernel_size, stride=2, padding=1, batch_norm=True):
     layers = []
@@ -39,7 +41,7 @@ class Discriminator(nn.Module):
     def forward(self, x):
         x = self.leaky_relu(self.conv1(x))
         x = self.leaky_relu(self.conv2(x))
-        x = self.leaky_relu(self.conv2(x))
+        x = self.leaky_relu(self.conv3(x))
 
         x = x.view(-1, self.conv_dim * 4 * 4 * 4)
 
@@ -47,3 +49,17 @@ class Discriminator(nn.Module):
 
         # final sigmoid will be applied into BCEWithLogitsLoss function
         return x
+
+
+def real_loss(D_out: torch.Tensor, cuda, smooth=False):
+    batch_size = D_out.size(0)
+
+    if smooth:
+        labels = torch.ones(batch_size) * 0.9
+    else:
+        labels = torch.ones(batch_size)
+
+    if cuda:
+        labels = labels.cuda()
+
+    return criterion(D_out.squeeze(), labels)
