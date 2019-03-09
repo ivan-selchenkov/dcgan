@@ -48,7 +48,7 @@ class Generator(nn.Module):
 
 def fake_loss(G_out: torch.Tensor, cuda):
     batch_size = G_out.size(0)
-    labels = torch.ones(batch_size)
+    labels = torch.zeros(batch_size)
 
     if cuda:
         labels = labels.cuda()

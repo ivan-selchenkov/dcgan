@@ -106,6 +106,9 @@ for epoch in range(num_epochs):
     samples.append(samples_z)
     G.train()  # back to train mode
 
+torch.save(D.state_dict(), './D.state')
+torch.save(G.state_dict(), './G.state')
+
 with open('train_samples.pkl', 'wb') as f:
     pkl.dump(samples, f)
 
